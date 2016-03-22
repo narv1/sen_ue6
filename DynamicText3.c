@@ -25,9 +25,9 @@
 int main(int argc, char *argv[])
 {
   // zähler für Fehler und Argumenteneingabe
-  int stderr = 0;
+  int stder = 0;
   int opt;
-  //  extern char *optarg;
+
   extern int optopt;
   
   while ((opt = getopt(argc, argv, "h")) != -1) {
@@ -43,69 +43,79 @@ int main(int argc, char *argv[])
       if (isprint (optopt)){
 	printf ("Please Type %s, -h for more information.\n", argv[0]);
       }
-      stderr++;
+      stder++;
       break;
     }
   }
 
-  long length;
-  FILE *fp = fopen ("uebtext.txt", "rb");
-  char *buffer = 0; 
+  /* Abfangen eines Fehlers bei flasche Argumenteneingabe */
+  if(stder == 1){
+    return 1;
+  }
 
-  if (fp)
-    {
-      fseek (fp, 0, SEEK_END);
-      length = ftell (fp);
-      fseek (fp, 0, SEEK_SET);
-      buffer = malloc (length);
-      if (buffer)
-	{
-	  fread (buffer, 1, length, fp);
-	}
-      fclose (fp);
+  FILE * fp;
+  char line[N];
+  
+  /* initialisierung des Arraypointers */
+  char ** ptr2p = NULL;
+  int len;
+  int i = 0;
+
+  /* Oeffnen der Datei */
+  fp = fopen("uebtext.txt","r");
+
+  /**************************************/
+  /*   Zeilenweise einlesen der Datei   */
+  /* mit dynamischer Speicherverwaltung */
+  /**************************************/
+  while (fgets(line,N,fp)) {
+
+    /* Abfangen eines Fehlers wenn es beim oeffnen der Datei probleme gibt. */
+    if(fp == NULL){
+      printf("Fehler beim Oeffnen der Datei.\n");
+      return 1;
     }
 
-  printf("Bitte geben sie die Zeilennummer an, welche Sie sich anzeigen lassen wollen:");
-  int a = 0;
-  while(1){
+    ptr2p = realloc(ptr2p,(i+1) * sizeof(char *));
+    len = strlen(line);
+    ptr2p[i] = calloc(sizeof(char),len+1);
+
+    strcpy(ptr2p[i],line);
+    i++;
+  }
+
+  int j, a;
+
+  /* Inhalt der Datei auf 'cli' ausgeben */
+  for(j = 0; j < i; j++) {
+    printf("%s",ptr2p[j]);
+  }
+  /* Abfrage welche Zeile ausgegeben werden soll */
+   printf("Bitte geben sie die Zeile an welche sei ausgeben möchten:");
+  do{
     scanf("%d", &a);
-    if(a > 2)break;
-    printf("\nDie Zahl muss größer als 2 sein:");
-    
-  }
-    
+    if(a < 2 || a > j){
+      printf("\nDie Zahl muss größer als 2 sein und kleiner als %d:",j+1);
+    }
+  }while(a < 2 || a > j);
+
+  /* löschen des Eingabepuffers */
   fflush(stdin);
-  
-  int j = 0;
-  char *buff2;
-  
-  for(; *buffer != '\0' ; buffer++){
-    if(*buffer == '\n')j++;
-    if(j == a - 3){
-      buffer++;
-      buff2 = buffer;
-      break;
-    }
-  }
-  //  printf("j = %d",j);
-  j = 0;
-  char tr[] = "\n";
 
-  buff2 = strtok( buff2, tr);
+  int b = a - 3;
+  a = a - 3;
 
-  while(buff2 != NULL) {
-    if(j == 2){
-      printf("\033[31m%s\n", buff2);
-      buff2 = strtok(NULL, tr);
+  /* Ausgabe der 5 Zeilen ('\033[31m' Code bei Debian für färbige Ausgabe) */
+  while(b != a +5) {
+    if(b == a + 2){
+      printf("\033[31m%s", ptr2p[b]);
     }else{
-      printf("\033[m%s\n", buff2);
-      buff2 = strtok(NULL, tr);
+      printf("\033[m%s", ptr2p[b]);
     }
-    j++;
-    if(j == 5)break;
+    b++;
+    if(b == a + 5)break;
   }
-  
-  printf("\n");
-  
+
+  /* ENDE */
   return 0;
 }
