@@ -107,6 +107,7 @@ int main(int argc, char *argv[])
 
   /* Ausgabe der 5 Zeilen ('\033[31m' Code bei Debian für färbige Ausgabe) */
   while(b != a +5) {
+    if( b > j)break;
     if(b == a + 2){
       printf("\033[31m%s", ptr2p[b]);
     }else{

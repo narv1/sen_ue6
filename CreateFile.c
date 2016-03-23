@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
       /* Wenn ein Falsches Argument aufgerufen wurde */
     case'?':
       if (isprint (optopt)){
-	printf ("Please Type %s, -h for more information.\n", argv[0]);
+	printf ("Bitte tippen Sie %s, -h für mehr Informationen.\n", argv[0]);
       }
       stderr++;
       break;

@@ -44,6 +44,9 @@ int xml_tag(int len, char text[N]){
     if(text[i] == '\0')break;
     
   }
+  if(i <= 6){
+    return 0;
+  }
   
   /* Auslagern des Inhalt und des tags in einen String */
   char *ptr;;
@@ -137,7 +140,7 @@ int main(int argc, char *argv[])
 
       /* Aufruf der Hilfe mit '-h' */
     case 'h':
-      printf("Dieses Programm liest die Datei \'uebtext.txt\' ein und überprüft ob es sich um eine xml-Datei handelt.\nDesweiteren sucht es nach xml-tags und diese werden dann auf der stdout ausgegeben.\n\nWarnung:In diesem Programm ist der header der Datei zwingend erforderlich.\nEs muss mindestens \'<?xml>\' vorhanden sein.");
+      printf("Dieses Programm liest die Datei \'uebtext.txt\' ein und überprüft ob es sich um eine xml-Datei handelt.\nDesweiteren sucht es nach xml-tags und diese werden dann auf der stdout ausgegeben.\n\nWarnung:In diesem Programm ist der header der Datei zwingend erforderlich.\nEs muss mindestens \'<?xml>\' vorhanden sein.\n");
       return 0;
 
       /* Wenn ein Falsches Argument aufgerufen wurde  */
@@ -210,7 +213,7 @@ int main(int argc, char *argv[])
       }
     }
     if(text[i] == '\0')break;
-    if(j > 0){
+    if(j >= 0){
       buff[k] = text[i];
       k++;
       if(text[i] == '\n')k = 0;
